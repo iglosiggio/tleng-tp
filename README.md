@@ -3,7 +3,7 @@
 ## Levantar el TP
 
 Yo estoy usando virtualenv para no ensuciar el resto de la distro correr
-`cd codigo && virtualenv -p python3 venv && source venv/bin/activate && pip -r requirements.txt`
+`cd codigo && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt`
 debería ser suficiente.
 
 ## Estructura del repo
