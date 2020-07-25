@@ -127,7 +127,11 @@ def p_comment_words_list(p):
     '''comment_words_list : comment_word comment_words_list
                           | comment_word'''
     if len(p) == 3:
-        p[0] = [p[1]] + p[2]
+        # Juntar strings pegados
+        if isinstance(p[2][0], str):
+            p[0] = [f'{p[1]} {p[2][0]}'] + p[2][1:]
+        else:
+            p[0] = [p[1]] + p[2]
     else:
         p[0] = [p[1]]
 
