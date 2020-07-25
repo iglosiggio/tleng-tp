@@ -10,19 +10,49 @@ tokens = (
     'END_COMMENT',
     'MOVE_NUMBER',
     'MOVE',
+    'GAME_RESULT',
     'WORD',
 )
+t_ignore = ' \t\r\n'
 
-t_BEGIN_DESCRIPTOR = '\['
-t_DESCRIPTOR_NAME  = '[A-Z][a-zA-Z]*' # Preguntar por mail si esto está bien
-t_DESCRIPTOR_VALUE = '"[^"]*"'
-t_END_DESCRIPTOR   = ']'
-t_BEGIN_COMMENT    = '{'
-t_END_COMMENT      = '}'
-t_MOVE_NUMBER      = '[1-9][0-9]*\.(\.\.)?'
-t_MOVE             = '([PNBRQK]?[a-h]?[0-9]?x?[a-h][1-8]|O-O|O-O-O)(\+|\#)?'
-t_ignore           = ' \t\r\n'
-t_WORD             = '[^ \t\r\n]+'
+# Poner todos los tokens en funciones fuerza la prioridad
+# para desambiguar entre ellos.
+
+def t_BEGIN_DESCRIPTOR(t):
+    '\['
+    return t
+
+def t_DESCRIPTOR_VALUE(t):
+    '"[^"]*"'
+    return t
+
+def t_END_DESCRIPTOR(t):
+    ']'
+    return t
+
+def t_BEGIN_COMMENT(t):
+    '{'
+    return t
+
+def t_END_COMMENT(t):
+    '}'
+    return t
+
+def t_MOVE_NUMBER(t):
+    '[1-9][0-9]*\.(\.\.)?'
+    return t
+
+def t_MOVE(t):
+    '([PNBRQK]?[a-h]?[0-9]?x?[a-h][1-8]|O-O|O-O-O)[+#]?'
+    return t
+
+def t_GAME_RESULT(t):
+    '1-0|0-1|1/2-1/2'
+    return t
+
+def t_WORD(t):
+    '[^ \t\r\n}]+'
+    return t
 
 lexer = lex.lex()
 
