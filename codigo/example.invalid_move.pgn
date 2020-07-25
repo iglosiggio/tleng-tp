@@ -1,0 +1,4 @@
+[Ejemplo "Archivo roto (jugada inexistente)"]
+[Descripción "Este archivo tiene que fallar el parseo"]
+
+1. e4 e9 1-0
