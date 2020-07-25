@@ -1,0 +1,4 @@
+[Ejemplo "Comentarios anidados"]
+[Descripción "Este es un ejemplo que usa comentarios anidados"]
+
+1. e4 {acá un comentario {y otro que dice que es la más común, a diferencia de la poco usual e3 {que es mala} y la respuesta e5 es muy común}} 1... e5 1-0
