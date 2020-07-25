@@ -157,6 +157,7 @@ parser = yacc.yacc()
 
 if __name__ == '__main__':
     import sys
+    from pprint import pprint as print
     s = sys.stdin.read()
     result = parser.parse(s)
     print(result)
