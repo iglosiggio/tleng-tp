@@ -1,5 +1,15 @@
 import ply.lex as lex
 
+# Representación de los movimientos
+class Move:
+    def __init__(self, movetext):
+        self.movetext = movetext
+    def __str__(self):
+        return self.movetext
+    def __repr__(self):
+        return self.movetext
+
+
 # Lista de terminales
 tokens = (
     'BEGIN_DESCRIPTOR',
@@ -52,6 +62,7 @@ def t_MOVE_NUMBER(t):
 
 def t_MOVE(t):
     r'([PNBRQK]?[a-h]?[0-9]?x?[a-h][1-8]|O-O-O|O-O)[+#]?'
+    t.value = Move(t.value)
     return t
 
 def t_GAME_RESULT(t):
