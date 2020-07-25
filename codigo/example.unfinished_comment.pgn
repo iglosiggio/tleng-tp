@@ -1,0 +1,4 @@
+[Ejemplo "Archivo roto"]
+[Descripción "Este archivo tiene que fallar el parseo"]
+
+1. e4 e5 { Nf3 1-0
