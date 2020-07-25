@@ -78,7 +78,19 @@ lexer = lex.lex()
 import ply.yacc as yacc
 
 def p_pgn_file(p):
-    'file : descriptor_list game'
+    'p_pgn_file : pgn_game_list'
+    p[0] = p[1]
+
+def p_pgn_game_list(p):
+    '''pgn_game_list : pgn_game pgn_game_list
+                     | pgn_game'''
+    if len(p) == 3:
+        p[0] = [p[1]] + p[2]
+    else:
+        p[0] = [p[1]]
+
+def p_pgn_game(p):
+    'pgn_game : descriptor_list game'
     p[0] = { 'descriptor': p[1], 'game': p[2] }
 
 def p_descriptor_list(p):
