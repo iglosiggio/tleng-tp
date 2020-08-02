@@ -13,6 +13,7 @@ def max_depth(a, b):
 def increase_nesting(v):
     return v + 1 if v is not None else None
 
+Descriptor = namedtuple('Descriptor', ['key', 'value'])
 Comment = namedtuple('Comment', ['content', 'max_move_comment_depth'])
 CommentPart = namedtuple('CommentPart', ['content', 'max_move_comment_depth'])
 
@@ -38,14 +39,16 @@ def p_pgn_game(p):
 def p_descriptor_list(p):
     '''descriptor_list : descriptor descriptor_list
                        | descriptor'''
-    if len(p) == 3:
-        p[0] = [p[1]] + p[2]
-    else:
-        p[0] = [p[1]]
+
+    tag = p[1]
+    event_tags = p[2] if len(p) == 3 else {}
+    event_tags[tag.key] = tag.value
+    p[0] = event_tags
+
 
 def p_descriptor(p):
     'descriptor : BEGIN_DESCRIPTOR any_token DESCRIPTOR_VALUE END_DESCRIPTOR'
-    p[0] = { 'name': p[2], 'value': p[3] }
+    p[0] = Descriptor(p[2], p[3])
 
 def p_any_token(p):
     '''any_token : BEGIN_DESCRIPTOR

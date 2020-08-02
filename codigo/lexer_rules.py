@@ -33,7 +33,8 @@ def t_BEGIN_DESCRIPTOR(t):
     return t
 
 def t_DESCRIPTOR_VALUE(t):
-    r'"[^"]*"'
+    r'"([^"]*)"'
+    t.value = t.value[1:-1]
     return t
 
 def t_END_DESCRIPTOR(t):
