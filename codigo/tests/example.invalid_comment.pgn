@@ -1,0 +1,5 @@
+[Ejemplo "Archivo roto (comentario inadecuado)"]
+[Descripción "Este archivo tiene que fallar el parseo"]
+[Razón "No se permiten comentarios entre el número de jugada y la primera jugada"]
+
+1. {Este es un comentario} e4 e9 1-0

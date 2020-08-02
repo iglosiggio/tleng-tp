@@ -53,8 +53,13 @@ def p_move_list(p):
         p[0] = [p[1]]
 
 def p_move(p):
-    'move : MOVE_NUMBER move_content'
-    p[0] = (p[1], p[2])
+    '''move : MOVE_NUMBER MOVE
+            | MOVE_NUMBER MOVE move_content'''
+
+    if len(p) == 4:
+        p[0] = (p[1], [p[2]] + p[3])
+    else:
+        p[0] = (p[1], [p[2]])
 
 def p_move_content(p):
     '''move_content : MOVE
