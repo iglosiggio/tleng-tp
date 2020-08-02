@@ -15,6 +15,9 @@ def increase_nesting(v):
 Descriptor = namedtuple('Descriptor', ['key', 'value'])
 Comment = namedtuple('Comment', ['content', 'max_move_comment_depth'])
 CommentPart = namedtuple('CommentPart', ['content', 'max_move_comment_depth'])
+TurnList = namedtuple('TurnList', ['turns', 'max_move_comment_depth'])
+GameTurn = namedtuple('GameTurn', ['order', 'moves', 'max_move_comment_depth'])
+MoveList = namedtuple('MoveList', ['list', 'max_move_comment_depth'])
 
 def is_str(v):
     return isinstance(v, str)
@@ -33,12 +36,21 @@ def p_pgn_game_list(p):
 
 def p_pgn_game(p):
     'pgn_game : descriptor_list game'
-    p[0] = { 'descriptor': p[1], 'game': p[2] }
+    event_description = p[1]
+    game = p[2]
+    p[0] = {
+        'descriptor': event_description,
+        'game': game,
+        # Supongo que el primer movimiento de la partida es el primer
+        # movimiento del jugador blanco. Si el archivo está mal numerado o se
+        # jugase con algunas reglas alternativas esto no resultaría cierto.
+        'first_move': game['turns'][0].moves[0],
+        'max_move_comment_depth': game['max_move_comment_depth']
+    }
 
 def p_descriptor_list(p):
     '''descriptor_list : descriptor descriptor_list
                        | descriptor'''
-
     tag = p[1]
     event_tags = p[2] if len(p) == 3 else {}
     event_tags[tag.key] = tag.value
@@ -62,34 +74,59 @@ def p_any_token(p):
     p[0] = p[1]
 
 def p_game(p):
-    'game : move_list GAME_RESULT'
-    p[0] = { 'moves': p[1], 'result': p[2] }
+    'game : turn_list GAME_RESULT'
+    p[0] = {
+        'turns': p[1].turns,
+        'max_move_comment_depth': p[1].max_move_comment_depth,
+        'result': p[2],
+    }
 
-def p_move_list(p):
-    '''move_list : move move_list
+def p_turn_list(p):
+    '''turn_list : move turn_list
                  | move'''
+    turns = [p[1]]
+    max_move_comment_depth = p[1].max_move_comment_depth
+
     if len(p) == 3:
-        p[0] = [p[1]] + p[2]
-    else:
-        p[0] = [p[1]]
+        turns += p[2].turns
+        max_move_comment_depth = max_depth(
+            max_move_comment_depth,
+            p[2].max_move_comment_depth
+        )
+
+    p[0] = TurnList(turns, max_move_comment_depth)
 
 def p_move(p):
     '''move : MOVE_NUMBER MOVE
             | MOVE_NUMBER MOVE move_content'''
+    order = p[1]
+    moves = [p[2]]
+    max_move_comment_depth = None
 
     if len(p) == 4:
-        p[0] = (p[1], [p[2]] + p[3])
-    else:
-        p[0] = (p[1], [p[2]])
+        moves += p[3].list
+        max_move_comment_depth = p[3].max_move_comment_depth
+
+    p[0] = GameTurn(order, moves, max_move_comment_depth)
 
 def p_move_content(p):
     '''move_content : MOVE
                     | comment
                     | MOVE move_content'''
+    moves = [p[1]]
+    max_move_comment_depth = None
+
+    if isinstance(p[1], Comment):
+        max_move_comment_depth = p[1].max_move_comment_depth
+
     if len(p) == 3:
-        p[0] = [p[1]] + p[2]
-    else:
-        p[0] = [p[1]]
+        moves += p[2].list
+        max_move_comment_depth = max_depth(
+            max_move_comment_depth,
+            p[2].max_move_comment_depth
+        )
+
+    p[0] = MoveList(moves, max_move_comment_depth)
 
 def p_comment(p):
     'comment : BEGIN_COMMENT comment_words_list END_COMMENT'
@@ -124,7 +161,6 @@ def p_comment_words_list(p):
 def p_comment_word(p):
     '''comment_word : comment
                     | any_comment_token'''
-
     if isinstance(p[1], Move):
         p[0] = CommentPart(p[1], 0)
     elif isinstance(p[1], Comment):
