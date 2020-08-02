@@ -1,9 +1,6 @@
 from lexer_rules import tokens, Move
 from collections import namedtuple
 
-def is_str(v):
-    return isinstance(v, str)
-
 # It's like max(a, b) but None is the "lowest" value
 def max_depth(a, b):
     if a is None:
@@ -17,6 +14,10 @@ def increase_nesting(v):
     return v + 1 if v is not None else None
 
 Comment = namedtuple('Comment', ['content', 'max_move_comment_depth'])
+CommentPart = namedtuple('CommentPart', ['content', 'max_move_comment_depth'])
+
+def is_str(v):
+    return isinstance(v, str)
 
 def p_pgn_file(p):
     'p_pgn_file : pgn_game_list'
@@ -90,44 +91,44 @@ def p_move_content(p):
 
 def p_comment(p):
     'comment : BEGIN_COMMENT comment_words_list END_COMMENT'
-    p[0] = Comment(p[2]['content'], increase_nesting(p[2]['max_move_comment_depth']))
+    p[0] = Comment(p[2].content, increase_nesting(p[2].max_move_comment_depth))
 
 def p_comment_words_list(p):
     '''comment_words_list : comment_word comment_words_list
                           | comment_word'''
-    p[0] = {}
-
     if len(p) == 3:
-        this_word_content = p[1]['content']
-        words_list_content = p[2]['content']
-        # Juntar strings pegados
-        if is_str(this_word_content) and is_str(words_list_content[0]):
-            p[0]['content'] = \
-                [f'{this_word_content} {words_list_content[0]}'] \
-                + words_list_content[1:]
-        else:
-            p[0]['content'] = [this_word_content] + words_list_content
+        this_word = p[1]
+        this_word_content = this_word.content
+        words_list = p[2].content
+        words_list_head = words_list[0]
+        words_list_tail = words_list[1:]
 
-        p[0]['max_move_comment_depth'] = max_depth(
-                p[1]['max_move_comment_depth'],
-                p[2]['max_move_comment_depth']
+        if is_str(this_word.content) and is_str(words_list_head):
+            words_list_head = f'{this_word.content} {words_list_head}'
+            content = [words_list_head] + words_list_tail
+        else:
+            content = [this_word_content] + words_list
+
+        max_move_comment_depth = max_depth(
+            p[1].max_move_comment_depth,
+            p[2].max_move_comment_depth
         )
     else:
-        p[0]['content'] = [p[1]]
-        p[0]['max_move_comment_depth'] = p[1]['max_move_comment_depth']
+        content = [p[1].content]
+        max_move_comment_depth = p[1].max_move_comment_depth
+
+    p[0] = CommentPart(content, max_move_comment_depth)
 
 def p_comment_word(p):
     '''comment_word : comment
                     | any_comment_token'''
-    p[0] = {}
-    p[0]['content'] = p[1]
 
     if isinstance(p[1], Move):
-        p[0]['max_move_comment_depth'] = 0
-    elif isinstance(p[1], Comment) and p[1].max_move_comment_depth is not None:
-        p[0]['max_move_comment_depth'] = p[1].max_move_comment_depth
+        p[0] = CommentPart(p[1], 0)
+    elif isinstance(p[1], Comment):
+        p[0] = CommentPart(p[1], p[1].max_move_comment_depth)
     else:
-        p[0]['max_move_comment_depth'] = None
+        p[0] = CommentPart(p[1], None)
 
 def p_any_comment_token(p):
     '''any_comment_token : BEGIN_DESCRIPTOR

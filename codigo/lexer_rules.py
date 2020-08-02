@@ -1,11 +1,6 @@
-# Representación de los movimientos
-class Move:
-    def __init__(self, movetext):
-        self.movetext = movetext
-    def __str__(self):
-        return self.movetext
-    def __repr__(self):
-        return self.movetext
+from collections import namedtuple
+
+Move = namedtuple('Move', ['movetext'])
 
 # Lista de terminales
 tokens = (
