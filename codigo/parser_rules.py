@@ -7,7 +7,6 @@ def max_depth(a, b):
         return b
     elif b is None:
         return a
-    print(a)
     return max(a, b)
 
 def increase_nesting(v):
