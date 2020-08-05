@@ -57,7 +57,7 @@ Una cosa a notar es que nuestro lexer aprovecha el que el motor de expresiones
 regulares permite priorizar opciones ordenándolas (por ejemplo `/a|aa/` nunca
 matchea `aa`). Utilizamos esto para tener una buena definición de `WORD`. Otra
 cosa notable es que podríamos haber armado a los descriptores como un único
-token (algo parecido a `/\[([^" \t]+)[ \t]*"([^"]*)"\]/) pero dado que
+token (algo parecido a `/\[([^" \t]+)[ \t]*"([^"]*)"\]/`) pero dado que
 decidimos "congelar" el desarrollo del lexer ni bien sentíamos que alcanzaba
 para nuestras necesidades nos quedamos con un poco de complejidad extra.
 
@@ -94,7 +94,7 @@ válidos
 * `comment`: Un comentario
 * `comment_words_list`: La lista de palabras, jugadas y subcomentarios que
   conforman a un comentario
-* `comment_word`: Un elemento de un comentario (un comentario o una palabra)`
+* `comment_word`: Un elemento de un comentario (un comentario o una palabra)
 * `any_comment_token`: Una palabra de un comentario
 
 ![Autómata generado por PLY usando el algoritmo LALR](automata.png)
