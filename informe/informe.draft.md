@@ -91,7 +91,7 @@ válidos
 * `comment_word`: Un elemento de un comentario (un comentario o una palabra)`
 * `any_comment_token`: Una palabra de un comentario
 
-![Autómata generado por PLY usando el algoritmo LALR](automata.pdf)
+![Autómata generado por PLY usando el algoritmo LALR](automata.png)
 
 # Problemas encontrados
 
