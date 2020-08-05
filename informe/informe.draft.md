@@ -57,7 +57,7 @@ para nuestras necesidades nos quedamos con un poco de complejidad extra.
 
 La existencia del token `WORD` es para poder tokenizar el texto arbitrario
 dentro de comentarios. Una alternativa es la de "island grammars" propuesta por
-ANTLR.
+ANTLR o el uso de start conditions presentes en PLY.
 
 ## Parser
 
