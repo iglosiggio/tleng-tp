@@ -1,20 +1,15 @@
-import lexer_rules
-import parser_rules
-from pprint import pprint
-
 import sys
-
-from ply.lex import lex
-from ply.yacc import yacc
-
+from pprint import pprint
+from parser_rules import parser
+from lexer_rules import lexer
 
 if __name__ == '__main__':
-    
-    s = sys.stdin.read()
+    if len(sys.argv) == 2:
+        s = open(sys.argv[1]).read()
+    else:
+        s = sys.stdin.read()
 
-    lexer = lex(module=lexer_rules)
-    parser = yacc(module=parser_rules)
     
-    result = parser.parse(s, lexer, tracking=True)
+    result = parser.parse(s, lexer, tracking=True, debug=False)
     print('=== Parsing results ===')
     pprint(result)

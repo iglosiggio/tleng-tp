@@ -1,4 +1,5 @@
 from collections import namedtuple
+from ply.lex import lex
 
 Move = namedtuple('Move', ['movetext'])
 
@@ -65,3 +66,5 @@ def t_GAME_RESULT(t):
 def t_WORD(t):
     r'[^ \t\r\n}]+'
     return t
+
+lexer = lex()

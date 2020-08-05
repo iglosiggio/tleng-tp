@@ -1,5 +1,7 @@
-from lexer_rules import tokens, Move
 from collections import namedtuple
+from ply.yacc import yacc
+
+from lexer_rules import tokens, Move
 
 # It's like max(a, b) but None is the "lowest" value
 def max_depth(a, b):
@@ -197,7 +199,13 @@ def p_any_comment_token(p):
     p[0] = p[1]
 
 def p_error(p):
+    current_state = parser.state
+    valid_actions = parser.action[parser.state].keys()
+
     if p is not None:
         print(f'[ERROR] Syntax error at line {p.lineno}, token={p.type} ({p.value})')
     else:
         print('[ERROR] Syntax error at EOF')
+    print('[ERROR] Expected token to be one of', [action for action in valid_actions], 'instead')
+
+parser = yacc()
