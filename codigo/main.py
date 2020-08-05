@@ -11,5 +11,9 @@ if __name__ == '__main__':
 
     
     result = parser.parse(s, lexer, tracking=True, debug=False)
+    opening = max((count, move) for (move, count) in result['first_moves'].items())
     print('=== Parsing results ===')
     pprint(result)
+    print('=== Processing results ===')
+    print('Max nesting of a comment with a valid move:', result['max_move_comment_depth'])
+    print(f'Most common opening: {opening[1]} ({opening[0]} times)')

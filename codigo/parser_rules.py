@@ -41,10 +41,23 @@ def p_pgn_file(p):
 def p_pgn_game_list(p):
     '''pgn_game_list : pgn_game pgn_game_list
                      | pgn_game'''
+    game_list = {}
+    first_move = p[1]['first_move'].movetext
+
     if len(p) == 3:
-        p[0] = [p[1]] + p[2]
+        game_list['games'] = [p[1]] + p[2]['games']
+        game_list['max_move_comment_depth'] = max_depth(
+            p[1]['max_move_comment_depth'],
+            p[2]['max_move_comment_depth']
+        )
+        game_list['first_moves'] = p[2]['first_moves'].copy()
+        game_list['first_moves'][first_move] = game_list['first_moves'].get(first_move) + 1
     else:
-        p[0] = [p[1]]
+        game_list['games'] = [p[1]]
+        game_list['max_move_comment_depth'] = p[1]['max_move_comment_depth']
+        game_list['first_moves'] = { first_move: 1 }
+
+    p[0] = game_list
 
 def p_pgn_game(p):
     'pgn_game : descriptor_list game'
