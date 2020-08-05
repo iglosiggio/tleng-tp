@@ -11,10 +11,10 @@ if __name__ == '__main__':
 
     
     result = parser.parse(s, lexer, tracking=True, debug=False)
-    print('=== Parsing results ===')
-    pprint(result)
 
     if result is not None:
+        print('=== Parsing results ===')
+        pprint(result)
         print('=== Processing results ===')
         opening = max((count, move) for (move, count) in result['first_moves'].items())
         print('Max nesting of a comment with a valid move:', result['max_move_comment_depth'])
