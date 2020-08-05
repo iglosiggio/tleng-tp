@@ -14,8 +14,7 @@ if __name__ == '__main__':
 
     lexer = lex(module=lexer_rules)
     parser = yacc(module=parser_rules)
-    #pp = pprint.PrettyPrinter(indent=1)
     
-    result = parser.parse(s, lexer)
+    result = parser.parse(s, lexer, tracking=True)
     print('=== Parsing results ===')
     pprint(result)

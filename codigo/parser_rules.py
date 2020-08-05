@@ -12,6 +12,9 @@ def max_depth(a, b):
 def increase_nesting(v):
     return v + 1 if v is not None else None
 
+# The starting symbol for our grammar
+start = 'p_pgn_file'
+
 Descriptor = namedtuple('Descriptor', ['key', 'value'])
 Comment = namedtuple('Comment', ['content', 'max_move_comment_depth'])
 CommentPart = namedtuple('CommentPart', ['content', 'max_move_comment_depth'])
@@ -21,6 +24,13 @@ MoveList = namedtuple('MoveList', ['list', 'max_move_comment_depth'])
 
 def is_str(v):
     return isinstance(v, str)
+
+def error_rule(rule, error_message):
+    def error_reporting_rule(p):
+        print(f'[ERROR] {error_message} at line {p.lineno(1)}')
+        raise SyntaxError
+    error_reporting_rule.__doc__ = rule
+    return error_reporting_rule
 
 def p_pgn_file(p):
     'p_pgn_file : pgn_game_list'
@@ -81,6 +91,8 @@ def p_game(p):
         'result': p[2],
     }
 
+p_game_error_missing_result = error_rule('game : turn_list descriptor', 'Missing game result')
+
 def p_turn_list(p):
     '''turn_list : move turn_list
                  | move'''
@@ -109,6 +121,9 @@ def p_move(p):
 
     p[0] = GameTurn(order, moves, max_move_comment_depth)
 
+p_move_invalid_error = error_rule('move : MOVE_NUMBER WORD move_content', 'Invalid move')
+p_move_mislpaced_comment_error = error_rule('move : MOVE_NUMBER comment move_content', 'Misplaced comment')
+
 def p_move_content(p):
     '''move_content : MOVE
                     | comment
@@ -127,6 +142,9 @@ def p_move_content(p):
         )
 
     p[0] = MoveList(moves, max_move_comment_depth)
+
+p_move_content_invalid_error = error_rule('move_content : WORD', 'Invalid move')
+p_move_content_invalid_error2 = error_rule('move_content : WORD move_content', 'Invalid move')
 
 def p_comment(p):
     'comment : BEGIN_COMMENT comment_words_list END_COMMENT'
@@ -179,7 +197,7 @@ def p_any_comment_token(p):
     p[0] = p[1]
 
 def p_error(p):
-    if p:
-        print("yacc: Syntax error at line %s, token=%s (%s)" % (p.lineno, p.type, p.value))
+    if p is not None:
+        print(f'[ERROR] Syntax error at line {p.lineno}, token={p.type} ({p.value})')
     else:
-        print("Syntax error at EOF")
+        print('[ERROR] Syntax error at EOF')
