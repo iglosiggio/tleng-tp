@@ -19,6 +19,12 @@ A presentar:
 
 # Presentación
 
+Este trabajo práctico implementa un parser básico para una versión extendida
+del formato `PGN` en la cuál los comentarios se pueden anidar arbitrariamente y
+los descriptores de evento son cadenas arbitrarias.
+
+El informe documenta el proceso de diseño e implementación del trabajo así cómo
+rutas alternativas que no decidimos explorar.
 
 # Diseño e implementación
 
@@ -95,8 +101,46 @@ válidos
 
 # Problemas encontrados
 
+En esta sección detallamos los problemas encontrados y los distintos
+acercamientos a sus soluciones.
+
 ## Manejo de errores
 
+El manejo de errores en EOF resultó tremendamente difícil. Si bien
+conceptualmente es fácil describir "error de comment no cerrado ocurre cuando
+se puede reducir `BEGIN_COMMENT comment_words_list eof`" esto no tiene un mapeo
+simple al parser generator. Para el reporte de errores PLY ofrece el
+pseudo-símbolo `error` pero por alguna razón un error al final de un archivo no
+se reduce a este símbolo (o al menos no encontramos cómo lograrlo) para poder
+imprimir el mensaje de error que deseábamos.
+
+Para manejar casos de error específicos cómo movimientos inválidos o
+comentarios ubicados en lugares incorrectos escribimos producciones que generan
+error al reducir. Éstas resultan fáciles de construir y mantener, pero
+acomplejizan el autómata y empeoran el manejo genérico de errores.
+
+Para imprimir mejores mensajes de error en casos genéricos directamente
+escribimos un manejador de errores que imprime las transiciones válidas del
+autómata en el momento en el cuál se produjo el error. Esto puede ser un tanto
+confuso para un usuario pero resulta muy útil a la hora de debuggear. Al tener
+producciones que reducen a un error resulta falso que todas las transiciones
+"legales" "reducen bien". Si bien decidimos mantener ambos acercamientos al
+reporte de errores en nuestro proyecto creemos que esta incompatibilidad no es
+irresoluble, dado que las producciones de error podrían ser marcadas como tales
+y ser modificado el autómata para saber si un estado posee sólamente
+producciones de error en su conjunto de ítems.
+
+## Visualización del autómata
+
+PLY ofrece un archivo `parser.out` con un detalle sobre el parser generado.
+Para poder diagnosticar varios de nuestros problemas y entender mejor el código
+generado creamos un par de scripts que transforman éste en un diagrama
+utilizando AWK y Graphviz.
 
 # Conclusiones
 
+Los generadores de parsers son una herramienta muy fácil de utilizar para
+gramáticas simples, pero entenderlos en profundidad, diagnosticar errores y
+realizar adaptaciones complejas requiren de un entendimiento de la algoritmia
+detrás de ellos. El manejo de errores es una tarea muy dificultosa de realizar
+sin modificar en gran medida la gramática "deseada".
