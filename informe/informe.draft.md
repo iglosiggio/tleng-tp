@@ -61,6 +61,38 @@ ANTLR.
 
 ## Parser
 
+El el desarrollo del parser fué principalmente top-down. Comenzando por la
+regla `pgn_file` fuimos describiendo la forma del archivo (un archivo pgn es
+una lista de partidas, que son un encabezado y un cuerpo, un encabezado es una
+lista de descriptores...). Dos cosas a puntualizar son el que tenemos muchas
+reglas con la forma `lista_de_cosas -> cosa lista_de_cosas | cosa` y que para
+el manejo de algunos errores construimos reglas que producen la terminación del
+programa al reducir.
+
+La lista de reglas definidas es la siguiente:
+
+* `pgn_file`: Un fichero `pgn` el símbolo inicial de nuestra gramática
+* `pgn_game_list`: Una lista de partidos
+* `pgn_game`: Un partido, compuesto por si header y la descripción propia del
+  partido
+* `descriptor_list`: El encabezado del archivo, una lista de descriptores
+* `descriptor`: Una etiqueta específica de un archivo
+* `any_token`: El nombre de una etiqueta. Está conformado de todos los tokens
+  posibles dado que quisimos permitir movimientos o cadenas como nombres
+válidos
+* `game`: Las jugadas que conforman a un partido seguidas de su resultado
+* `turn_list`: Una lista de jugadas
+* `move`: Una jugada en específico, posee al menos un movimiento de pieza
+* `move_content`: Una secuencia de comentarios y movimientos de piezas que
+  corresponden a una jugada
+* `comment`: Un comentario
+* `comment_words_list`: La lista de palabras, jugadas y subcomentarios que
+  conforman a un comentario
+* `comment_word`: Un elemento de un comentario (un comentario o una palabra)`
+* `any_comment_token`: Una palabra de un comentario
+
+![Autómata generado por PLY usando el algoritmo LALR](automata.pdf)
+
 # Problemas encontrados
 
 ## Manejo de errores
