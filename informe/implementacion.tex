@@ -4,7 +4,7 @@ El diseño del trabajo práctico se separó en partes distinguidas: primero cons
 
 \subsection{Lexer}
 
-Si bien el lexer y el parser se desarrollaron en conjunto el enfoque fué en tener a éste terminado primero. Dado que un conjunto de tokens suficientemente expresivo y estable nos permitió iterar con las reglas del parser mucho más fácilmente.
+Si bien el lexer y el parser se desarrollaron en conjunto el enfoque fué en tener a éste terminado primero. Dado que un conjunto de tokens suficientemente expresivo y estable nos permitió iterar con las producciones del parser mucho más fácilmente.
 
 Los tokens nuestro lexer genera son los siguientes:
 \begin{itemize}
@@ -26,10 +26,9 @@ La existencia del token WORD es para poder tokenizar el texto arbitrario dentro 
 
 \subsection{Parser}
 
+El el desarrollo del parser fué principalmente top-down. Comenzando por el no-terminal pgn\_file fuimos describiendo la forma del archivo (un archivo pgn es una lista de partidas, que son un encabezado y un cuerpo, un encabezado es una lista de descriptores...). Dos cosas a puntualizar son el que tenemos muchas producciones con la forma $lista\_de\_cosas \rightarrow cosa\ lista\_de\_cosas\ |\ cosa$ y que para el manejo de algunos errores construimos producciones que producen la terminación del programa al reducir.
 
-El el desarrollo del parser fué principalmente top-down. Comenzando por la regla pgn\_file fuimos describiendo la forma del archivo (un archivo pgn es una lista de partidas, que son un encabezado y un cuerpo, un encabezado es una lista de descriptores...). Dos cosas a puntualizar son el que tenemos muchas reglas con la forma lista\_de\_cosas -> cosa lista\_de\_cosas | cosa y que para el manejo de algunos errores construimos reglas que producen la terminación del programa al reducir.
-
-La lista de reglas definidas es la siguiente:
+La lista de no-terminales es la siguiente:
 
   \begin{itemize}
     \item pgn\_file: Un fichero pgn el símbolo inicial de nuestra gramática
@@ -47,12 +46,9 @@ La lista de reglas definidas es la siguiente:
     \item comment\_word: Un elemento de un comentario (un comentario o una palabra)
     \item any\_comment\_token: Una palabra de un comentario
 \end{itemize}  
-    
-    
-    
 
 \begin{sidewaysfigure}[ht]
     \centering
-    \includegraphics[scale=0.09]{images/automata.png}
+    \includegraphics[scale=0.13]{images/automata.pdf}
     \caption{Autómata de gramática.}
 \end{sidewaysfigure}
