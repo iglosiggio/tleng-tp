@@ -20,7 +20,7 @@ Los tokens nuestro lexer genera son los siguientes:
 \end{itemize}
     
     
-Una cosa a notar es que nuestro lexer aprovecha el que el motor de expresiones regulares permite priorizar opciones ordenándolas (por ejemplo /a|aa/ nunca matchea aa). Utilizamos esto para tener una buena definición de WORD. Otra cosa notable es que podríamos haber armado a los descriptores como un único token (algo parecido a )  pero dado que decidimos "congelar" el desarrollo del lexer ni bien sentíamos que alcanzaba para nuestras necesidades nos quedamos con un poco de complejidad extra.
+Una cosa a notar es que nuestro lexer aprovecha el que el motor de expresiones regulares permite priorizar opciones ordenándolas (por ejemplo \verb/a|aa/ nunca matchea aa). Utilizamos esto para tener una buena definición de WORD. Otra cosa notable es que podríamos haber armado a los descriptores como un único token (algo parecido a \verb/\[([^" \t]+)[ \t]*"([^"]*)"\]/ )  pero dado que decidimos ``congelar'' el desarrollo del lexer ni bien sentíamos que alcanzaba para nuestras necesidades nos quedamos con un poco de complejidad extra.
 
 La existencia del token WORD es para poder tokenizar el texto arbitrario dentro de comentarios. Una alternativa es la de "island grammars" propuesta por ANTLR o el uso de start conditions presentes en PLY.
 
