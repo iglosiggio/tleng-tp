@@ -6,7 +6,7 @@ El manejo de errores en EOF resultó difícil. Si bien conceptualmente es fácil
 
 Para manejar casos de error específicos cómo movimientos inválidos o comentarios ubicados en lugares incorrectos escribimos producciones que generan error al reducir. Éstas resultan fáciles de construir y mantener, pero acomplejizan el autómata.
 
-Para imprimir mejores mensajes de error en casos genéricos directamente escribimos un manejador de errores que imprime las transiciones válidas del autómata en el estado en el cuál se produjo el error. Esto puede ser un tanto confuso para un usuario pero resulta muy útil a la hora de debuggear. Al además tener producciones que reducen a un error resulta falso que todas las transiciones "legales" "reducen bien".
+Para imprimir mejores mensajes de error en casos genéricos directamente escribimos un manejador de errores que imprime las transiciones válidas del autómata en el estado en el cuál se produjo el error. Esto puede ser un tanto confuso para un usuario pero resulta muy útil a la hora de debuggear. Al además tener producciones que reducen a un error resulta falso que todas las transiciones ``legales'' ``reducen bien''
 
 Si bien decidimos mantener ambos acercamientos al reporte de errores en nuestro proyecto creemos que esta incompatibilidad no es irresoluble, dado que las producciones de error podrían ser marcadas como tales y ser modificado el autómata para saber si una transición es a un estado que posee sólamente producciones de error en su conjunto de ítems.
 
