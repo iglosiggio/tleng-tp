@@ -19,7 +19,7 @@ A presentar:
 
 # Presentación
 
-Este trabajo práctico implementa un parser básico para una versión extendida
+Este trabajo práctico implementa un parser básico para una versión simplificada
 del formato `PGN` en la cuál los comentarios se pueden anidar arbitrariamente y
 los descriptores de evento son cadenas arbitrarias.
 
@@ -35,9 +35,9 @@ simplificó gratamente el proceso.
 
 ## Lexer
 
-Si bien el lexer y el parser se desarrollaron en conjunto el enfoque fué en
-tener a éste terminado primero. Dado que un conjunto de tokens suficientemente
-expresivo y estable nos permitió iterar con las reglas del parser mucho más
+Si bien el lexer y el parser se desarrollaron en conjunto, el enfoque fue puesto en
+tener al lexer terminado primero. Esto es porque un conjunto de tokens suficientemente
+expresivo y estable nos permitiría iterar con las reglas del parser mucho más
 fácilmente.
 
 Los tokens nuestro lexer genera son los siguientes:
@@ -53,13 +53,13 @@ Los tokens nuestro lexer genera son los siguientes:
 * `GAME_RESULT`: El resultado de una partida
 * `WORD` : Cualquier otra cadena sin espacios en el medio
 
-Una cosa a notar es que nuestro lexer aprovecha el que el motor de expresiones
+Una cosa a notar es que nuestro lexer aprovecha el hecho de que el motor de expresiones
 regulares permite priorizar opciones ordenándolas (por ejemplo `/a|aa/` nunca
 matchea `aa`). Utilizamos esto para tener una buena definición de `WORD`. Otra
 cosa notable es que podríamos haber armado a los descriptores como un único
 token (algo parecido a `/\[([^" \t]+)[ \t]*"([^"]*)"\]/`) pero dado que
 decidimos "congelar" el desarrollo del lexer ni bien sentíamos que alcanzaba
-para nuestras necesidades nos quedamos con un poco de complejidad extra.
+para nuestras necesidades, nos quedamos con un poco de complejidad extra.
 
 La existencia del token `WORD` es para poder tokenizar el texto arbitrario
 dentro de comentarios. Una alternativa es la de "island grammars" propuesta por
@@ -67,19 +67,20 @@ ANTLR o el uso de start conditions presentes en PLY.
 
 ## Parser
 
-El el desarrollo del parser fué principalmente top-down. Comenzando por la
+El desarrollo del parser fue principalmente top-down. Comenzando por la
 regla `pgn_file` fuimos describiendo la forma del archivo (un archivo pgn es
-una lista de partidas, que son un encabezado y un cuerpo, un encabezado es una
-lista de descriptores...). Dos cosas a puntualizar son el que tenemos muchas
-reglas con la forma `lista_de_cosas -> cosa lista_de_cosas | cosa` y que para
-el manejo de algunos errores construimos reglas que producen la terminación del
+una lista de partidas, que son un encabezado y un cuerpo. A su vez, un encabezado es una
+lista de descriptores...).
+Podemos destacar dos cosas principalmente:
+1. Construimos muchas reglas con la forma `lista_de_cosas -> cosa lista_de_cosas | cosa`
+2. Para el manejo de algunos errores, construimos reglas que producen la terminación del
 programa al reducir.
 
 La lista de reglas definidas es la siguiente:
 
-* `pgn_file`: Un fichero `pgn` el símbolo inicial de nuestra gramática
+* `pgn_file`: Un fichero `pgn` y el símbolo inicial de nuestra gramática
 * `pgn_game_list`: Una lista de partidos
-* `pgn_game`: Un partido, compuesto por si header y la descripción propia del
+* `pgn_game`: Un partido, compuesto por su header y la descripción propia del
   partido
 * `descriptor_list`: El encabezado del archivo, una lista de descriptores
 * `descriptor`: Una etiqueta específica de un archivo
@@ -106,28 +107,30 @@ acercamientos a sus soluciones.
 
 ## Manejo de errores
 
-El manejo de errores en EOF resultó tremendamente difícil. Si bien
-conceptualmente es fácil describir "error de comment no cerrado ocurre cuando
-se puede reducir `BEGIN_COMMENT comment_words_list eof`" esto no tiene un mapeo
-simple al parser generator. Para el reporte de errores PLY ofrece el
+El manejo de errores en EOF resultó ser uno de los problemas más dificiles encontrados.
+Si bien conceptualmente es fácil describir algo con la forma "error de comment no cerrado ocurre cuando
+se puede reducir `BEGIN_COMMENT comment_words_list eof`", esto no tiene un mapeo
+simple al parser generator. Para el reporte de errores, PLY ofrece el
 pseudo-símbolo `error` pero por alguna razón un error al final de un archivo no
 se reduce a este símbolo (o al menos no encontramos cómo lograrlo) para poder
 imprimir el mensaje de error que deseábamos.
 
-Para manejar casos de error específicos cómo movimientos inválidos o
+Para manejar casos de error específicos como movimientos inválidos o
 comentarios ubicados en lugares incorrectos escribimos producciones que generan
 error al reducir. Éstas resultan fáciles de construir y mantener, pero
 acomplejizan el autómata y empeoran el manejo genérico de errores.
 
-Para imprimir mejores mensajes de error en casos genéricos directamente
-escribimos un manejador de errores que imprime las transiciones válidas del
+Para imprimir mejores mensajes de error en casos genéricos, implementamos
+un _handler_ de errores que imprime las transiciones válidas del
 autómata en el momento en el cuál se produjo el error. Esto puede ser un tanto
-confuso para un usuario pero resulta muy útil a la hora de debuggear. Al tener
-producciones que reducen a un error resulta falso que todas las transiciones
-"legales" "reducen bien". Si bien decidimos mantener ambos acercamientos al
-reporte de errores en nuestro proyecto creemos que esta incompatibilidad no es
+confuso para un usuario, pero resulta muy útil a la hora de debuggear. Al tener
+producciones que reducen a un error, resulta falso que todas las transiciones
+"legales" reducen "bien".
+
+Finalmente decidimos mantener ambos acercamientos al reporte de errores en
+nuestro proyecto. Sin embargo, creemos que esta incompatibilidad no es
 irresoluble, dado que las producciones de error podrían ser marcadas como tales
-y ser modificado el autómata para saber si un estado posee sólamente
+y modificando el autómata para saber si un estado posee solamente
 producciones de error en su conjunto de ítems.
 
 ## Visualización del autómata
@@ -141,6 +144,25 @@ utilizando AWK y Graphviz.
 
 Los generadores de parsers son una herramienta muy fácil de utilizar para
 gramáticas simples, pero entenderlos en profundidad, diagnosticar errores y
-realizar adaptaciones complejas requiren de un entendimiento de la algoritmia
-detrás de ellos. El manejo de errores es una tarea muy dificultosa de realizar
-sin modificar en gran medida la gramática "deseada".
+realizar adaptaciones complejas requieren de un entendimiento del funcionamiento
+detrás de ellos. Particularmente, es necesario entender y conocer distintos
+tipos de gramáticas, ya que sin ese conocimiento, se torna realmente difícil la
+creación de un generador de parsers. Podemos poner como ejemplos, el hecho de
+saber que se le puede dar prioridad a las producciones, y que existen
+gramáticas de atributos que permiten resolver problemas como es el de contar el
+máximo nivel de anidamiento de comentarios que hay en un archivo PGN.
+
+Tener un conocimiento sobre los distintos tipos de gramáticas abre las puertas
+a entender la complejidad que tiene la gramática. En este caso, pudimos llegar
+al objetivo de este trabajo práctico generando una parser LALR. Sabiendo esto,
+podemos afirmar que la complejidad temporal de _parsear_ un archivo PGN es _O(N)_.
+
+El manejo de errores, como mencionamos anteriormente, es una tarea muy
+dificultosa de realizar sin modificar en gran medida la gramática que resuelve
+el problema original. Esto incluso puede generar que tal vez, si no manejáramos
+errores, podríamos haber generado un parser LR(0) o SLR.
+La resolución a la que llegamos para manejar correctamente los errores nos sirvió
+tanto para debuggear más fácilmente como para dar un buen detalle de la
+razón del error. Por lo tanto, creemos que generar una gramática más compleja
+a cambio de un buen manejo de errores y, considerando que la complejidad temporal
+es lineal, no es un gran costo a pagar para el beneficio que ofrece a cambio.
