@@ -8,7 +8,7 @@ Para manejar casos de error específicos cómo movimientos inválidos o comentar
 
 Para imprimir mejores mensajes de error en casos genéricos directamente escribimos un manejador de errores que imprime las transiciones válidas del autómata en el estado en el cuál se produjo el error. Esto puede ser un tanto confuso para un usuario pero resulta muy útil a la hora de debuggear. Al además tener producciones que reducen a un error resulta falso que todas las transiciones ``legales'' ``reducen bien''
 
-Si bien decidimos mantener ambos acercamientos al reporte de errores en nuestro proyecto creemos que esta incompatibilidad no es irresoluble, dado que las producciones de error podrían ser marcadas como tales y ser modificado el autómata para saber si una transición es a un estado que posee sólamente producciones de error en su conjunto de ítems.
+Si bien decidimos mantener ambos acercamientos al reporte de errores en nuestro proyecto creemos que esta incompatibilidad no es irresoluble, dado que las producciones de error podrían ser marcadas como tales modificando el autómata para saber si una transición es a un estado que posee sólamente producciones de error en su conjunto de ítems.
 
 \subsection{Visualización del autómata}
 PLY ofrece un archivo parser.out con un detalle sobre el parser generado. Para poder diagnosticar varios de nuestros problemas y entender mejor el código generado creamos un par de scripts que transforman éste en un diagrama utilizando AWK y Graphviz. Éste es el diagrama que se puede ver al final de la sección de implementación.
