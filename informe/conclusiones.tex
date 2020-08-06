@@ -1,2 +1,25 @@
 \section{Conclusiones}
-Los generadores de parsers son una herramienta muy fácil de utilizar para gramáticas simples, pero entenderlos en profundidad, diagnosticar errores y realizar adaptaciones complejas requiren de un entendimiento de la algoritmia detrás de ellos. El manejo de errores es una tarea muy dificultosa de realizar sin modificar en gran medida la gramática ``deseada''.
+Los generadores de parsers son una herramienta muy fácil de utilizar para
+gramáticas simples, pero entenderlos en profundidad, diagnosticar errores y
+realizar adaptaciones complejas requieren de un entendimiento del funcionamiento
+detrás de ellos. Particularmente, es necesario entender y conocer distintos
+tipos de gramáticas, ya que sin ese conocimiento, se torna realmente difícil la
+creación de un generador de parsers. Podemos poner como ejemplos, el hecho de
+saber que se le puede dar prioridad a las producciones, y que existen
+gramáticas de atributos que permiten resolver problemas como es el de contar el
+máximo nivel de anidamiento de comentarios que hay en un archivo PGN.
+
+Tener un conocimiento sobre los distintos tipos de gramáticas abre las puertas
+a entender la complejidad que tiene la gramática. En este caso, pudimos llegar
+al objetivo de este trabajo práctico generando una parser LALR. Sabiendo esto,
+podemos afirmar que la complejidad temporal de \textit{parsear} un archivo PGN es \textit{O(N)}.
+
+El manejo de errores, como mencionamos anteriormente, es una tarea muy
+dificultosa de realizar sin modificar en gran medida la gramática que resuelve
+el problema original. Esto incluso puede generar que tal vez, si no manejáramos
+errores, podríamos haber generado un parser LR(0) o SLR.
+La resolución a la que llegamos para manejar correctamente los errores nos sirvió
+tanto para debuggear más fácilmente como para dar un buen detalle de la
+razón del error. Por lo tanto, creemos que generar una gramática más compleja
+a cambio de un buen manejo de errores y, considerando que la complejidad temporal
+es lineal, no es un gran costo a pagar para el beneficio que ofrece a cambio.
